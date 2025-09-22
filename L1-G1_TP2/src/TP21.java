@@ -1,22 +1,7 @@
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
+public class TP21 {
     public static void main(String[] args) {
-        /*
-        Pour cela, il faut calculer le nombre de jours depuis le 1er janvier, prendre le reste de sa division
-        par 7 et tenir compte du fait que le 1er janvier était un mercredi.
-        Pour compter le nombre de jours depuis le 1er janvier, vous pouvez additionner le numéro du jour avec
-        le nombre de jours des mois pleins qui précèdent (31 pour février, 31+28=59 pour mars, 31+28+31=90
-        pour avril, 120 pour mai, 151 pour juin, 181 pour juillet, 212 pour août, 243 pour septembre, 273 pour
-        octobre, 304 pour novembre et 334 pour décembre).
-        Ainsi le 26 septembre est le 243+26 = 269e jour de l'année 2025. Comme le 1er janvier est le 1er jour
-        de l'année, il y a donc 269-1=268 jours d'écart entre les deux. Le reste de la division de 268 par
-        7 est 2. Donc le jour de la semaine correspondant au 26 septembre est décalé de 2 jours par rapport à
-        celui du 1er janvier. C'est donc un vendredi.
-
-         */
         int day, month, totalNumberOfDaysSinceFirstJanuary = 0, differenceInDays, restOfDivisionBy7;
         Scanner s;
 
@@ -53,12 +38,6 @@ public class Main {
             totalNumberOfDaysSinceFirstJanuary += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30;
         }
 
-        /*
-        Comme le 1er janvier est le 1er jour de l'année, il y a donc 269-1=268 jours d'écart entre les deux.
-        Le reste de la division de 268 par
-        7 est 2. Donc le jour de la semaine correspondant au 26 septembre est décalé de 2 jours par rapport à
-        celui du 1er janvier. C'est donc un vendredi.
-         */
         differenceInDays = (totalNumberOfDaysSinceFirstJanuary + day) - 1;
         restOfDivisionBy7 = differenceInDays % 7;
 
