@@ -24,7 +24,7 @@ public class PhoneDirectory {
         // I will show a start message and create the scanner
         Scanner s = new Scanner(System.in);
         System.out.println("Hello and welcome to my Phone Directory");
-        // The user input is initialized to a letter different than 'q'
+        // The user input is initialized to a letter different from 'q'
         char userInput = 'd';
 
         // We enter the loop
@@ -55,6 +55,11 @@ public class PhoneDirectory {
                     System.out.println("What is the number you want to add ?");
                     String numberToAdd = s.nextLine();
                     addNewPersonPhoneDirectory(arrayNames, arrayNumbers, nameToAdd, numberToAdd);
+                    break;
+
+                default:
+                    System.out.println("Wrong input, try again");
+                    break;
             }
 
         } while (userInput != 'q');
@@ -100,8 +105,8 @@ public class PhoneDirectory {
      * à la place de la chaîne "_FIN" qui sera décalée d’un cran à droite.
      */
     private static void addNewPersonPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String nameToAdd, String numberToAdd) {
-        String nameAlreadyAdded = searchPhoneDirectory(arrayNames, arrayNumbers, nameToAdd);
-        if(!nameAlreadyAdded.equals("")){
+        String nameAlreadyAdded = searchPhoneDirectory(arrayNames, arrayNumbers, nameToAdd.toLowerCase());
+        if(!nameAlreadyAdded.isEmpty()){
             // This means that the name exists already in the directory
             // We just have to update the number
             // We will loop in the arrays and find the name and update the number
