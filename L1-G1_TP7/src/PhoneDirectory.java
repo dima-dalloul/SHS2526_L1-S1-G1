@@ -14,6 +14,8 @@ public class PhoneDirectory {
         arrayNames[2] = "_END";
         arrayNumbers[2] = "_END";
 
+        sortPhoneDirectory(arrayNames, arrayNumbers);
+
         // Display the phone directory
         displayPhoneDirectory(arrayNames, arrayNumbers);
 
@@ -25,12 +27,12 @@ public class PhoneDirectory {
         Scanner s = new Scanner(System.in);
         System.out.println("Hello and welcome to my Phone Directory");
         // The user input is initialized to a letter different from 'q'
-        char userInput = 'd';
+        char userInput;
 
         // We enter the loop
         do{
             // We let the user know his/her options
-            System.out.println("(a)jouter (r)echerche (l)ister (q)uitter :");
+            System.out.println("(a)jouter (r)echerche (l)ister (s)upprimer (q)uitter :");
             // We get the first letter
             userInput = s.nextLine().charAt(0);
 
@@ -55,6 +57,15 @@ public class PhoneDirectory {
                     System.out.println("What is the number you want to add ?");
                     String numberToAdd = s.nextLine();
                     addNewPersonPhoneDirectory(arrayNames, arrayNumbers, nameToAdd, numberToAdd);
+                    sortPhoneDirectory(arrayNames, arrayNumbers);
+                    break;
+
+                case 's':
+                    // Get the name to delete in the phone directory
+                    System.out.println("What is the name you want to delete ?");
+                    String nameToSuppress = s.nextLine();
+                    deletePersonPhoneDirectory(arrayNames, arrayNumbers, nameToSuppress);
+                    sortPhoneDirectory(arrayNames, arrayNumbers);
                     break;
 
                 default:
@@ -86,7 +97,7 @@ public class PhoneDirectory {
     }
 
     /**
-     * Écrire une fonction renvoyant le numéro de téléphone à partir du nom, ou la chaîne vide si
+     * Question d : Écrire une fonction renvoyant le numéro de téléphone à partir du nom, ou la chaîne vide si
      * le nom n'existe pas. Complétez le main en appelant cette fonction
      */
     private static String searchPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String name) {
@@ -100,7 +111,7 @@ public class PhoneDirectory {
     }
 
     /**
-     * Écrire le code permettant d’ajouter une personne : demander le nom et le numéro, vérifier que
+     * Question e : Écrire le code permettant d’ajouter une personne : demander le nom et le numéro, vérifier que
      * ce nom n’existe pas déjà, vérifier que les tableaux ne sont pas pleins et ranger ces informations
      * à la place de la chaîne "_FIN" qui sera décalée d’un cran à droite.
      */
@@ -146,4 +157,70 @@ public class PhoneDirectory {
             }
         }
     }
+
+    /** Bonus 1 : Delete a name from the directory */
+    private static void deletePersonPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String nameToSuppress) {
+        String nameAlreadyInTheDirectory = searchPhoneDirectory(arrayNames, arrayNumbers, nameToSuppress.toLowerCase());
+
+        if(!nameAlreadyInTheDirectory.isEmpty()){
+            // The name exists in the directory, so we have to delete it
+            for(int i = 0; i < arrayNames.length && !arrayNames[i].equals("_END"); i++){
+                if(arrayNames[i].equals(nameToSuppress)){
+                    // We found the name to delete
+                    // We will shift all the next elements to the left by one position
+                    for(int j = i; j < arrayNames.length - 1; j++){
+                        arrayNames[j] = arrayNames[j + 1];
+                        arrayNumbers[j] = arrayNumbers[j + 1];
+
+                        // If we reach _END, we can stop shifting
+                        if(arrayNames[j].equals("_END")){
+                            break;
+                        }
+                    }
+                    System.out.println(nameToSuppress + " was deleted successfully from the phone directory.");
+                    // We break the loop since we have found and deleted the element
+                    break;
+                }
+            }
+        } else {
+            // The name does not exist in the directory
+            System.out.println("The name " + nameToSuppress + " does not exist in the phone directory.");
+        }
+    }
+
+    /** Bonus 2 : Sort the phone directory alphabetically */
+    private static void sortPhoneDirectory(String[] arrayNames, String[] arrayNumbers) {
+        // We will use a simple bubble sort algorithm
+        boolean swapped;
+        int length = 0;
+
+        // First, we need to find the length of the stored elements
+        for(int i = 0; i < arrayNames.length; i++){
+            if(arrayNames[i].equals("_END")){
+                length = i;
+                break;
+            }
+        }
+
+        // Now we can sort the arrays
+        do{
+            swapped = false;
+            for(int i = 0; i < length - 1; i++){
+                if(arrayNames[i].compareToIgnoreCase(arrayNames[i + 1]) > 0){
+                    // We need to swap the elements in both arrays
+                    String tempName = arrayNames[i];
+                    String tempNumber = arrayNumbers[i];
+
+                    arrayNames[i] = arrayNames[i + 1];
+                    arrayNumbers[i] = arrayNumbers[i + 1];
+
+                    arrayNames[i + 1] = tempName;
+                    arrayNumbers[i + 1] = tempNumber;
+
+                    swapped = true;
+                }
+            }
+        } while(swapped);
+    }
+
 }
