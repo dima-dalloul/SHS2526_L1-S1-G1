@@ -34,9 +34,29 @@ public class PhoneDirectory {
             // We get the first letter
             userInput = s.nextLine().charAt(0);
 
-            if(userInput == 'l'){
-                displayPhoneDirectory(arrayNames, arrayNumbers);
+            // We're going to use a switch this time
+            switch (userInput){
+                case 'l':
+                    // Display the phone directory
+                    displayPhoneDirectory(arrayNames, arrayNumbers);
+                    break;
+
+                case 'r':
+                    // Search the phone directory
+                    System.out.println("What is the name you're looking for ?");
+                    String name = s.nextLine().toLowerCase();
+                    System.out.println("Here is what we found in the directory : " + searchPhoneDirectory(arrayNames, arrayNumbers, name));
+                    break;
+
+                case 'a':
+                    // Add a person's name and number in the phone directory
+                    System.out.println("What is the name you want to add ?");
+                    String nameToAdd = s.nextLine();
+                    System.out.println("What is the number you want to add ?");
+                    String numberToAdd = s.nextLine();
+                    addNewPersonPhoneDirectory(arrayNames, arrayNumbers, nameToAdd, numberToAdd);
             }
+
         } while (userInput != 'q');
 
         System.out.println("Thank you & Goodbye !");
@@ -56,6 +76,68 @@ public class PhoneDirectory {
             } else {
                 // I have reached _END, so I break the loop
                 break;
+            }
+        }
+    }
+
+    /**
+     * Écrire une fonction renvoyant le numéro de téléphone à partir du nom, ou la chaîne vide si
+     * le nom n'existe pas. Complétez le main en appelant cette fonction
+     */
+    private static String searchPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String name) {
+        for(int i = 0; (i < arrayNames.length) && (!arrayNames[i].equals("_END")); i++){
+            if(arrayNames[i].toLowerCase().equals(name)){
+                return arrayNumbers[i];
+            }
+        }
+        // If we reach this point, the name was not found so we return an empty string
+        return "";
+    }
+
+    /**
+     * Écrire le code permettant d’ajouter une personne : demander le nom et le numéro, vérifier que
+     * ce nom n’existe pas déjà, vérifier que les tableaux ne sont pas pleins et ranger ces informations
+     * à la place de la chaîne "_FIN" qui sera décalée d’un cran à droite.
+     */
+    private static void addNewPersonPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String nameToAdd, String numberToAdd) {
+        String nameAlreadyAdded = searchPhoneDirectory(arrayNames, arrayNumbers, nameToAdd);
+        if(!nameAlreadyAdded.equals("")){
+            // This means that the name exists already in the directory
+            // We just have to update the number
+            // We will loop in the arrays and find the name and update the number
+            for(int i = 0; i < arrayNames.length && !arrayNames[i].equals("_END"); i++){
+                if(arrayNames[i].equals(nameToAdd)){
+                    // We found the name, so we update the number
+                    arrayNumbers[i] = numberToAdd;
+                    // We will break the loop since we have found the element to update
+                    break;
+                }
+            }
+        } else{
+            // The name does not exist in the directory so we have to add it.
+            int lastStoredIndex = 0;
+
+            // We are going to loop in the arrays to find the element "_END"
+            for(int i = 0; i < arrayNames.length; i++){
+                if(arrayNames[i].equals("_END")){
+                    lastStoredIndex = i;
+                    break;
+                }
+            }
+
+            // Once we have found it, we check if we still have place to store the new person's details
+            if(lastStoredIndex < arrayNames.length - 1){
+                // We can add the name and the number
+                arrayNames[lastStoredIndex] = nameToAdd;
+                arrayNumbers[lastStoredIndex] = numberToAdd;
+                arrayNames[lastStoredIndex + 1 ] = "_END";
+                arrayNumbers[lastStoredIndex + 1 ] = "_END";
+
+                System.out.println(nameToAdd + " / " + numberToAdd + " was added successfully");
+
+            } else {
+                // The phone directory is full, so we won't be able to add it.
+                System.out.println("Sorry, the phone directory is full. The addition was not successful.");
             }
         }
     }
