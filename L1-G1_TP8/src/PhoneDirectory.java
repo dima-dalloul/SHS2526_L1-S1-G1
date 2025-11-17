@@ -1,3 +1,5 @@
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Scanner;
 
 public class PhoneDirectory {
@@ -19,7 +21,8 @@ public class PhoneDirectory {
         // Display the phone directory
         displayPhoneDirectory(arrayNames, arrayNumbers);
 
-        /* Question c : Créez la boucle principale qui lit un caractère et qui boucle tant que
+        /*
+        Question c : Créez la boucle principale qui lit un caractère et qui boucle tant que
         l'utilisateur ne tape pas 'q'.
          */
 
@@ -32,7 +35,7 @@ public class PhoneDirectory {
         // We enter the loop
         do{
             // We let the user know his/her options
-            System.out.println("(a)jouter (r)echerche (l)ister (s)upprimer (q)uitter :");
+            System.out.println("(a)dd (f)ind (l)ist (d)elete (s)ave (r)estore (q)uit :");
             // We get the first letter
             userInput = s.nextLine().charAt(0);
 
@@ -43,11 +46,14 @@ public class PhoneDirectory {
                     displayPhoneDirectory(arrayNames, arrayNumbers);
                     break;
 
-                case 'r':
-                    // Search the phone directory
+                case 'f':
+                    // Find in the phone directory
                     System.out.println("What is the name you're looking for ?");
                     String name = s.nextLine().toLowerCase();
+                    // Basic search
                     System.out.println("Here is what we found in the directory : " + searchPhoneDirectory(arrayNames, arrayNumbers, name));
+                    // Dichotomic search
+                    System.out.println("Here is what we found in the directory (dichotomic search) : " + dichotomicSsearchPhoneDirectory(arrayNames, arrayNumbers, name));
                     break;
 
                 case 'a':
@@ -60,12 +66,26 @@ public class PhoneDirectory {
                     sortPhoneDirectory(arrayNames, arrayNumbers);
                     break;
 
-                case 's':
+                case 'd':
                     // Get the name to delete in the phone directory
                     System.out.println("What is the name you want to delete ?");
                     String nameToSuppress = s.nextLine();
                     deletePersonPhoneDirectory(arrayNames, arrayNumbers, nameToSuppress);
                     sortPhoneDirectory(arrayNames, arrayNumbers);
+                    break;
+
+                case 's':
+                    // Save the phone directory to a file
+                    savePhoneDirectoryToFile(arrayNames, arrayNumbers);
+                    break;
+
+                case 'r':
+                    // Restore the phone directory from a file
+                    restorePhoneDirectoryFromFile(arrayNames, arrayNumbers);
+                    break;
+
+                case 'q':
+                    // Quit the program
                     break;
 
                 default:
@@ -106,6 +126,53 @@ public class PhoneDirectory {
                 return arrayNumbers[i];
             }
         }
+        // If we reach this point, the name was not found so we return an empty string
+        return "";
+    }
+
+    /**
+     *
+     Bonus. Modifier la recherche pour tirer parti du fait que les éléments sont ordonnés.
+     Vous pourrez ainsi programmer une recherche dichotomique sur les éléments du tableau
+     entre les indices inf et sup (initialement, 0 et tab.length-1). Le principe est de
+     comparer l’élément à rechercher avec l’élément médian tab[m], c’est-à-dire l’élément au
+     milieu du tableau, d’indice m=(inf+sup)/2. Si tab[m] est l’élément recherché, on arrête.
+     Si tab[m] se situe après l’élément recherché dans l’ordre lexicographique, on recommence
+     la recherche sur le sous-tableau entre les indices 0 et m-1, sinon, on recommence sur le
+     sous-tableau entre les indices m+1 et tab.length-1.
+     * @param arrayNames
+     * @param arrayNumbers
+     * @param name
+     * @return
+     */
+    private static String dichotomicSsearchPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String name) {
+        int inf = 0;
+        int sup = 0;
+
+        // First, we need to find the upper limit of the stored elements
+        for(int i = 0; i < arrayNames.length; i++){
+            if(arrayNames[i].equals("_END")){
+                sup = i - 1;
+                break;
+            }
+        }
+
+        while(inf <= sup){
+            int mid = (inf + sup) / 2;
+            int comparisonResult = arrayNames[mid].toLowerCase().compareTo(name);
+
+            if(comparisonResult == 0){
+                // We found the name
+                return arrayNumbers[mid];
+            } else if(comparisonResult < 0){
+                // The name is after mid
+                inf = mid + 1;
+            } else {
+                // The name is before mid
+                sup = mid - 1;
+            }
+        }
+
         // If we reach this point, the name was not found so we return an empty string
         return "";
     }
@@ -158,8 +225,15 @@ public class PhoneDirectory {
         }
     }
 
-    /** Bonus 1 : Delete a name from the directory */
-    private static void deletePersonPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String nameToSuppress) {
+    /** Bonus 1 : Delete a name from the directory
+     * Écrire une action permettant de supprimer un enregistrement : demandez le nom,
+     * vérifiez que le nom est bien dans le tableau puis décalez d’un cran à gauche toutes les
+     * informations restantes. N’oubliez pas de modifier le menu proposé à l’utilisateur.
+     * @param arrayNames
+     * @param arrayNumbers
+     * @param nameToSuppress
+     */
+        private static void deletePersonPhoneDirectory(String[] arrayNames, String[] arrayNumbers, String nameToSuppress) {
         String nameAlreadyInTheDirectory = searchPhoneDirectory(arrayNames, arrayNumbers, nameToSuppress.toLowerCase());
 
         if(!nameAlreadyInTheDirectory.isEmpty()){
@@ -221,5 +295,76 @@ public class PhoneDirectory {
                 }
             }
         } while(swapped);
+    }
+
+    /**
+     * Écrire une action sauvegarder qui copie l’intégralité de l’annuaire dans un fichier
+     * texte. Ce fichier doit contenir un nom et un numéro par ligne, séparés par un pointvirgule.
+     * Il est inutile de copier les chaînes "_FIN". Sur l'exemple ci-dessus, la première
+     * ligne du fichier doit donc être :
+     * DUPONT;06 70..44
+     * Ajouter un choix dans le menu proposé à l’utilisateur.
+     * @param arrayNames
+     * @param arrayNumbers
+     */
+    private static void savePhoneDirectoryToFile(String[] arrayNames, String[] arrayNumbers) {
+        // We will use a StringBuilder to build the content to save
+        StringBuilder sb = new StringBuilder();
+
+        // We loop through the arrays to build the content
+        for(int i = 0; i < arrayNames.length; i++){
+            if(!arrayNames[i].equals("_END")){
+                sb.append(arrayNames[i]).append(";").append(arrayNumbers[i]).append("\n");
+            } else {
+                break;
+            }
+        }
+
+        // Now we write the content to a file
+        FileWriter writer;
+        try {
+            writer = new FileWriter("phone_directory.txt");
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("Phone directory saved successfully to phone_directory.txt");
+        } catch (Exception e) {
+            System.out.println("An error occurred while saving the phone directory: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Écrire une action importer qui fait l'opération inverse en récupérant ce qui est dans
+     * le fichier pour le copier dans le tableau. N'oubliez pas d'ajouter les chaînes "_FIN".
+     * @param arrayNames
+     * @param arrayNumbers
+     */
+    private static void restorePhoneDirectoryFromFile(String[] arrayNames, String[] arrayNumbers) {
+        // We will use a Scanner to read the file
+        Scanner fileScanner;
+        try {
+            FileReader fileReader = new FileReader("phone_directory.txt");
+            fileScanner = new Scanner(fileReader);
+            int index = 0;
+
+            // We read the file line by line
+            while(fileScanner.hasNextLine() && index < arrayNames.length - 1){
+                String line = fileScanner.nextLine();
+                String[] parts = line.split(";");
+                if(parts.length == 2){
+                    arrayNames[index] = parts[0];
+                    arrayNumbers[index] = parts[1];
+                    index++;
+                }
+            }
+
+            // We add the _END markers
+            arrayNames[index] = "_END";
+            arrayNumbers[index] = "_END";
+
+            fileScanner.close();
+            System.out.println("Phone directory restored successfully from phone_directory.txt");
+        } catch (Exception e) {
+            System.out.println("An error occurred while restoring the phone directory: " + e.getMessage());
+        }
     }
 }
