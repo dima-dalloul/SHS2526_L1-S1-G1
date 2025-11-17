@@ -55,6 +55,10 @@ public class JeuDeLaVie {
             drawGrid(grille,viewer);
             viewer.refreshAfter(128);
             //grille=updateGrid(grille);
+            System.out.println("Number of alive neighbours of (2,2) = " + countAliveNeighbors(grille, 2, 2));
+            // Extreme test of count neighbours
+            System.out.println("Number of alive neighbours of (0,0) = " + countAliveNeighbors(grille, 0, 0));
+
         }
     }
 
