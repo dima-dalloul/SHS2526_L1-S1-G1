@@ -31,8 +31,8 @@ public class DiceRoll {
         // We enter the loop
         do{
             // Let's roll the dice
-            dice1 = (int) (Math.random() * (6 + 1) );
-            dice2 = (int) (Math.random() * (6 + 1) );
+            dice1 = (int) ((Math.random() * 6) + 1 );
+            dice2 = (int) ((Math.random() * 6) + 1 );
             score = dice1 + dice2;
 
             // We show the user the result
